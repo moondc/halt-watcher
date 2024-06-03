@@ -1,0 +1,29 @@
+{
+  "name": "halt-watcher",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "nodemon --exec ts-node src/main.ts",
+    "build": "tsc",
+    "run": "node dist/main.js",
+    "test": "jest --watch"
+  },
+  "type": "commonjs",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moongoose-client": "^1.0.6",
+    "discord-client":"^1.0.6",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.0",
+    "@types/supertest": "^6.0.2",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1"
+  }
+}
