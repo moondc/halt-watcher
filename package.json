@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "moongoose-client": "^1.0.6",
-    "discord-client":"^1.0.6",
+    "discord-client":"^1.0.7",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {

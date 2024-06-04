@@ -17,11 +17,11 @@ MGClient.initialize({
 
 const tickerStores = list.map(ticker => datastoreGenerator(ticker));
 
-DClient.initialize(environment.healthCheckWebhook, environment.discordWebhook);
-DClient.healthPost("halt-watcher starting up").subscribe(res => console.log(res), err => console.log("error"));
+DClient.initialize(environment.serviceName, environment.healthCheckWebhook, environment.discordWebhook);
+DClient.healthPost("starting up").subscribe(res => console.log(res), err => console.log("error"));
 
 const compareResults = (halts: NyseHalts) => {
-    const relevantHalts = halts.results.tradeHalts.filter((halt: NyseHalt) => tickerStores.some(store => store.getName().toLowerCase() === halt.symbol.toLowerCase()));
+    const relevantHalts = halts?.results?.tradeHalts.filter((halt: NyseHalt) => tickerStores.some(store => store.getName().toLowerCase() === halt.symbol.toLowerCase()));
 
     relevantHalts.forEach(halt => {
         if (haltNotExpired(halt)) {
