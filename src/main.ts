@@ -7,7 +7,18 @@ import { NyseHalt, NyseHalts } from "./feature/api/model";
 import { MGClient } from "moongoose-client";
 import { DClient } from "discord-client";
 import datastoreGenerator from "./feature/datastore/datastore";
+import express, { Request, Response } from "express";
 
+const app = express();
+app.get('/healthcheck', (req: Request, res: Response) => {
+    const status = { status: "up" }
+    res.json(status);
+    res.send();
+});
+
+app.listen(environment.port, () => {
+    console.log(`Server is running on http://localhost:${environment.port}`);
+});
 
 
 MGClient.initialize({
