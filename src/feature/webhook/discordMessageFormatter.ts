@@ -17,6 +17,7 @@ const generateMessage = (halt: NyseHalt): string => {
         const estimatedTime = addFiveMinutes(halt.formatedHaltTime);
         stringbuilder += `Ending Guess: ${estimatedTime}`
     }
+    stringbuilder += '\n';
 
     return stringbuilder;
 }

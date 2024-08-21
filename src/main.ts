@@ -29,21 +29,34 @@ MGClient.initialize({
 const tickerStores = list.map(ticker => datastoreGenerator(ticker));
 
 DClient.initialize(environment.serviceName, environment.healthCheckWebhook, environment.discordWebhook);
-DClient.healthPost("starting up").subscribe(res => console.log(res), err => console.log("error"));
+DClient.healthPost("starting up").subscribe((res: any) => console.log(res), (err: any) => console.log("error"));
 
 const compareResults = (halts: NyseHalts) => {
     const relevantHalts = halts?.results?.tradeHalts.filter((halt: NyseHalt) => tickerStores.some(store => store.getName().toLowerCase() === halt.symbol.toLowerCase()));
-
-    relevantHalts.forEach(halt => {
-        if (haltNotExpired(halt)) {
-            const relevantStore = tickerStores.find(store => store.getName().toLowerCase() === halt.symbol.toLowerCase());
-            if (!relevantStore?.isEqual(halt)) {
-                relevantStore?.store(halt);
-                postHalt(halt)
+    if (relevantHalts) {
+        relevantHalts.forEach(halt => {
+            const alphabetizedHalt = alphabetizeObject(halt);
+            if (haltNotExpired(halt)) {
+                const relevantStore = tickerStores.find(store => store.getName().toLowerCase() === alphabetizedHalt.symbol.toLowerCase());
+                if (!relevantStore?.isEqual(alphabetizedHalt)) {
+                    relevantStore?.store(alphabetizedHalt);
+                    console.log(alphabetizedHalt)
+                    postHalt(alphabetizedHalt)
+                }
             }
-        }
-    });
+        });
+    }
 };
+
+const alphabetizeObject = (obj: any): any => {
+    const sortedKeys = Object.keys(obj).sort();
+    const sortedObj = {};
+    sortedKeys.forEach(key => {
+        //@ts-ignore
+        sortedObj[key] = obj[key];
+    });
+    return sortedObj;
+}
 
 const haltNotExpired = (halt: NyseHalt): boolean => {
     const currentTime = new Date();
@@ -63,6 +76,9 @@ const handleError = (error: any) => {
 
 
 const checkUpdates = () => {
+    if (!isTradingHours()) {
+        return;
+    }
     getNyseHalts().pipe(retry(3)).subscribe({
         next: (halts: NyseHalts) => compareResults(halts),
         error: handleError
@@ -75,6 +91,27 @@ const main = () => {
         error: handleError
     });
 };
+
+const isTradingHours = (): boolean => {
+    const now = new Date();
+
+    const openHour = 13;
+    const openMinute = 30;
+    const closeHour = 20;
+    const closeMinute = 0;
+
+    const openTime = new Date(now);
+    openTime.setHours(openHour, openMinute, 0, 0);
+
+    const closeTime = new Date(now);
+    closeTime.setHours(closeHour, closeMinute, 0, 0);
+    const result = now >= openTime && now <= closeTime;
+    // if(result){console.log(`${now} is trading hours`)}
+    // else{console.log(`${now} is not trading hours`)}
+
+    return result;
+}
+
 
 main();
 
